@@ -1,0 +1,4478 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "reteach Rest API Documentation",
+    "description": "<p>This document describes all endpoints of the reteach Rest API.</p>\n      <p>More resources:</p>\n      <ul>\n      <li><a href=\"https://reteach.notion.site/Rest-API-Access-and-Authentication-eb420cb4a8474b77a6527d19e7db00f2\" taget=\"_blank\">How to authenticate with the API?</a></li>\n      <li><a href=\"https://reteach.notion.site/Rest-API-Changelog-b91202cde90b4be48774575a727b3807\" taget=\"_blank\">API Changelog</a></li>\n      <li><a href=\"https://api.reteach.io/docs-json\" taget=\"_blank\">OpenAPI specification (JSON)</a></li>\n      </ul>",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "https://api.reteach.io"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "ForbiddenErrorResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "default": 403
+          },
+          "message": {
+            "type": "string",
+            "default": "Forbidden resource"
+          },
+          "error": {
+            "type": "string",
+            "default": "Forbidden"
+          }
+        },
+        "required": [
+          "statusCode",
+          "message",
+          "error"
+        ]
+      },
+      "NotFoundErrorResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "default": 404
+          },
+          "message": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string",
+            "default": "Not found"
+          }
+        },
+        "required": [
+          "statusCode",
+          "message",
+          "error"
+        ]
+      },
+      "UnprocessableEntityErrorResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "default": 422
+          },
+          "message": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string",
+            "default": "Unprocessable Entity"
+          }
+        },
+        "required": [
+          "statusCode",
+          "message",
+          "error"
+        ]
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "EN",
+              "DE",
+              "FR",
+              "ES",
+              "IT",
+              "UK",
+              "RU",
+              "PL"
+            ],
+            "nullable": true
+          },
+          "company": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "DIVERSE"
+            ],
+            "nullable": true
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiredNotificationMail": {
+            "type": "string",
+            "nullable": true
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "MANUAL",
+              "OPTIN",
+              "SAML",
+              "OIDC",
+              "ORDER",
+              "IMPORT",
+              "REST_API"
+            ]
+          },
+          "authenticationMethod": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "SSO"
+            ]
+          },
+          "setActiveAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "setInactiveAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "lastLoginAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ADDED",
+              "INVITED",
+              "ACTIVE",
+              "INACTIVE"
+            ]
+          },
+          "registeredAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": false
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "authenticationMethod",
+          "status",
+          "registeredAt",
+          "tags"
+        ]
+      },
+      "CustomerPaginated": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Customer"
+            }
+          },
+          "resultCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "resultCount"
+        ]
+      },
+      "CustomerUpdateInput": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "company": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "DIVERSE"
+            ],
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "EN",
+              "DE",
+              "FR",
+              "ES",
+              "IT",
+              "UK",
+              "RU",
+              "PL"
+            ],
+            "nullable": true
+          },
+          "authenticationMethod": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "SSO"
+            ],
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "setActiveAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "setInactiveAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "expiredNotificationMail": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CustomerCreateInput": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "company": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "DIVERSE"
+            ],
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "EN",
+              "DE",
+              "FR",
+              "ES",
+              "IT",
+              "UK",
+              "RU",
+              "PL"
+            ],
+            "nullable": true
+          },
+          "authenticationMethod": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "SSO"
+            ],
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "setActiveAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "setInactiveAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "enforcedPasswordResetAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "expiredNotificationMail": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "isSucceeded": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "isSucceeded"
+        ]
+      },
+      "TagPaginated": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          },
+          "resultCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "resultCount"
+        ]
+      },
+      "TagCreateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "TagUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ImageThumbnailReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "JPEG",
+              "PNG",
+              "WEBP",
+              "GIF",
+              "SVG"
+            ]
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "width",
+          "height",
+          "format",
+          "url"
+        ]
+      },
+      "ImageReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "thumbnails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageThumbnailReadDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "width",
+          "height",
+          "thumbnails"
+        ]
+      },
+      "CourseReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PRIVATE",
+              "PUBLIC"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SINGLE_DAY_ONLINE_COURSE",
+              "MULTIPLE_DAYS_ONLINE_COURSE",
+              "ONLINE_COURSE",
+              "SINGLE_DAY_PRESENCE_TRAINING",
+              "MULTIPLE_DAYS_PRESENCE_TRAINING",
+              "SINGLE_DAY_LIVE_TRAINING",
+              "MULTIPLE_DAYS_LIVE_TRAINING",
+              "SINGLE_DAY_HYBRID_TRAINING",
+              "MULTIPLE_DAYS_HYBRID_TRAINING"
+            ]
+          },
+          "startsAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "endsAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "image": {
+            "default": null,
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageReadDto"
+              }
+            ]
+          },
+          "url": {
+            "type": "string"
+          },
+          "editUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "status",
+          "type",
+          "url",
+          "editUrl"
+        ]
+      },
+      "ProductVariantOrderReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "committedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Customer"
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CourseReadDto"
+            }
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "quantity",
+          "totalAmount",
+          "committedAt",
+          "customer",
+          "courses",
+          "url"
+        ]
+      },
+      "ProductVariantOrderPaginated": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductVariantOrderReadDto"
+            }
+          },
+          "resultCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "resultCount"
+        ]
+      },
+      "CoursePaginated": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CourseReadDto"
+            }
+          },
+          "resultCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "resultCount"
+        ]
+      },
+      "CourseCreateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CustomerCourseCertificateReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "url"
+        ]
+      },
+      "CustomerCourseParticipationReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "startedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "completedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "invitedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "joinedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "invitationAcceptedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "timeSpentToComplete": {
+            "type": "number",
+            "nullable": true
+          },
+          "acceptedCompleteConfirmationText": {
+            "type": "string",
+            "nullable": true
+          },
+          "progress": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ADDED",
+              "INVITED",
+              "INVITATION_ACCEPTED",
+              "JOINED",
+              "STARTED",
+              "COMPLETED",
+              "DECLINED",
+              "EXPIRED"
+            ]
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Customer"
+          },
+          "course": {
+            "$ref": "#/components/schemas/CourseReadDto"
+          },
+          "certificate": {
+            "$ref": "#/components/schemas/CustomerCourseCertificateReadDto"
+          }
+        },
+        "required": [
+          "id",
+          "progress",
+          "status",
+          "customer",
+          "course"
+        ]
+      },
+      "CustomerCourseParticipationPaginated": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerCourseParticipationReadDto"
+            }
+          },
+          "resultCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "resultCount"
+        ]
+      },
+      "CustomerCourseParticipationCreateInput": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "string"
+          },
+          "customerIdentifier": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "courseId",
+          "customerIdentifier"
+        ]
+      },
+      "CustomerCourseParticipationEnrollmentInput": {
+        "type": "object",
+        "properties": {
+          "customerEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sendInvitationMail": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "Editor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "baseUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "baseUrl"
+        ]
+      },
+      "TagRefInput": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "UpsertTagToCustomerInput": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "$ref": "#/components/schemas/TagRefInput"
+          }
+        },
+        "required": [
+          "tag"
+        ]
+      },
+      "AssignMultipleTagsToCustomerInput": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagRefInput"
+            }
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "ADD",
+              "REPLACE"
+            ],
+            "nullable": true
+          }
+        },
+        "required": [
+          "tags",
+          "mode"
+        ]
+      },
+      "CustomerImportFailedRows": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "index": {
+            "type": "number",
+            "nullable": false
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "DUPLICATE",
+              "MISSING_EMAIL",
+              "MISSING_EMAIL_OR_USERNAME",
+              "INVALID_EMAIL",
+              "INVALID_NOTIFICATION_EMAIL",
+              "INVALID_GENDER",
+              "INVALID_LANGUAGE",
+              "INVALID_BIRTHDATE",
+              "INVALID_SET_INACTIVE_AT",
+              "INVALID_SET_ACTIVE_AT",
+              "INVALID_AUTHENTICATION_METHOD",
+              "INVALID_TAG",
+              "PASSWORD_REQUIREMENTS_NOT_MET",
+              "INVALID_ENCODING",
+              "UNKNOWN"
+            ],
+            "nullable": false
+          },
+          "data": {
+            "type": "string",
+            "nullable": false
+          }
+        },
+        "required": [
+          "id",
+          "index",
+          "reason",
+          "data"
+        ]
+      },
+      "CustomerImport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number",
+            "nullable": false
+          },
+          "originalFilename": {
+            "type": "string",
+            "nullable": false
+          },
+          "startedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "failedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "completedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "successCount": {
+            "type": "number",
+            "nullable": true
+          },
+          "failedCount": {
+            "type": "number",
+            "nullable": true
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "INSERT",
+              "UPSERT"
+            ],
+            "nullable": false
+          },
+          "isSendAcademyInvitationEnabled": {
+            "type": "boolean",
+            "nullable": false
+          },
+          "isTagSyncEnabled": {
+            "type": "boolean",
+            "nullable": false
+          },
+          "failedRows": {
+            "nullable": false,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerImportFailedRows"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "size",
+          "originalFilename",
+          "mode",
+          "isSendAcademyInvitationEnabled",
+          "isTagSyncEnabled",
+          "failedRows"
+        ]
+      },
+      "CustomerImportPaginated": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerImport"
+            }
+          },
+          "resultCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "resultCount"
+        ]
+      },
+      "CustomerExport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "XLSX",
+              "CSV"
+            ]
+          },
+          "includeTags": {
+            "type": "boolean"
+          },
+          "includeParticipations": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "startedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "failedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "completedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "format",
+          "includeTags",
+          "includeParticipations"
+        ]
+      },
+      "CustomerExportPaginated": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerExport"
+            }
+          },
+          "resultCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "resultCount"
+        ]
+      },
+      "CustomerExportCreateInput": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "XLSX",
+              "CSV"
+            ],
+            "default": "CSV"
+          },
+          "includeTags": {
+            "type": "boolean",
+            "nullable": true,
+            "default": false
+          },
+          "includeParticipations": {
+            "type": "boolean",
+            "nullable": true,
+            "default": false
+          }
+        }
+      },
+      "CustomerCourseCertificate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "url"
+        ]
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "CustomerCourseParticipation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "startedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "completedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "invitedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "joinedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "invitationAcceptedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "acceptedCompleteConfirmationText": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ADDED",
+              "INVITED",
+              "INVITATION_ACCEPTED",
+              "JOINED",
+              "STARTED",
+              "COMPLETED",
+              "DECLINED",
+              "EXPIRED"
+            ]
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Customer"
+          },
+          "course": {
+            "$ref": "#/components/schemas/Course"
+          },
+          "certificate": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CustomerCourseCertificate"
+              }
+            ]
+          },
+          "progress": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "startedAt",
+          "completedAt",
+          "invitedAt",
+          "joinedAt",
+          "invitationAcceptedAt",
+          "acceptedCompleteConfirmationText",
+          "status",
+          "customer",
+          "course",
+          "certificate",
+          "progress"
+        ]
+      },
+      "RestHook": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "customer.created",
+              "customer.updated",
+              "customer.deleted",
+              "participation.created",
+              "participation.completed",
+              "certificate.processed",
+              "customer_export.processed",
+              "customer_import.processed",
+              "course.created",
+              "course.updated",
+              "course.deleted",
+              "live_course.created",
+              "live_course.updated",
+              "live_course.deleted",
+              "customer_to_tag.assigned",
+              "customer_to_tag.removed",
+              "tag.created",
+              "order.committed"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "target",
+          "event"
+        ]
+      },
+      "RestHookCreateInput": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "customer.created",
+              "customer.updated",
+              "customer.deleted",
+              "participation.created",
+              "participation.completed",
+              "certificate.processed",
+              "customer_export.processed",
+              "customer_import.processed",
+              "course.created",
+              "course.updated",
+              "course.deleted",
+              "live_course.created",
+              "live_course.updated",
+              "live_course.deleted",
+              "customer_to_tag.assigned",
+              "customer_to_tag.removed",
+              "tag.created",
+              "order.committed"
+            ]
+          }
+        },
+        "required": [
+          "target",
+          "event"
+        ]
+      },
+      "CustomerGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "nullable": false
+          },
+          "notificationMail": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "CourseInvitationReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "isMandatory": {
+            "type": "boolean",
+            "nullable": false,
+            "default": false
+          },
+          "deadline": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "default": null
+          },
+          "isRolling": {
+            "type": "boolean",
+            "nullable": false,
+            "default": false
+          },
+          "isRollingRelative": {
+            "type": "boolean",
+            "nullable": false,
+            "default": false
+          },
+          "rollingIntervalUnit": {
+            "type": "string",
+            "enum": [
+              "DAYS",
+              "WEEKS",
+              "MONTHS",
+              "YEARS"
+            ],
+            "nullable": true,
+            "default": null
+          },
+          "rollingInterval": {
+            "type": "number",
+            "nullable": true,
+            "default": null
+          },
+          "firstRollingParticipationAccessTimeUnit": {
+            "type": "string",
+            "enum": [
+              "DAYS",
+              "WEEKS",
+              "MONTHS",
+              "YEARS"
+            ],
+            "nullable": true,
+            "default": null
+          },
+          "firstRollingParticipationAccessTime": {
+            "type": "number",
+            "nullable": true,
+            "default": null
+          },
+          "followingRollingParticipationAccessTimeUnit": {
+            "type": "string",
+            "enum": [
+              "DAYS",
+              "WEEKS",
+              "MONTHS",
+              "YEARS"
+            ],
+            "nullable": true,
+            "default": null
+          },
+          "followingRollingParticipationAccessTime": {
+            "type": "number",
+            "nullable": true,
+            "default": null
+          },
+          "isNotificationEnabled": {
+            "type": "boolean",
+            "nullable": true,
+            "default": null
+          },
+          "isCertificateEnabled": {
+            "type": "boolean",
+            "nullable": false,
+            "default": false
+          },
+          "certificateExpiresAfter": {
+            "type": "number",
+            "nullable": true,
+            "default": null
+          },
+          "certificateExpiresAfterUnit": {
+            "type": "string",
+            "enum": [
+              "DAYS",
+              "WEEKS",
+              "MONTHS",
+              "YEARS"
+            ],
+            "nullable": true,
+            "default": null
+          },
+          "course": {
+            "$ref": "#/components/schemas/CourseReadDto"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Customer"
+          },
+          "customerGroup": {
+            "$ref": "#/components/schemas/CustomerGroup"
+          }
+        },
+        "required": [
+          "id",
+          "isMandatory",
+          "deadline",
+          "isRolling",
+          "isRollingRelative",
+          "rollingIntervalUnit",
+          "rollingInterval",
+          "firstRollingParticipationAccessTimeUnit",
+          "firstRollingParticipationAccessTime",
+          "followingRollingParticipationAccessTimeUnit",
+          "followingRollingParticipationAccessTime",
+          "isNotificationEnabled",
+          "isCertificateEnabled",
+          "certificateExpiresAfter",
+          "certificateExpiresAfterUnit",
+          "course"
+        ]
+      },
+      "CourseInvitationPaginated": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CourseInvitationReadDto"
+            }
+          },
+          "resultCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "resultCount"
+        ]
+      },
+      "CourseInvitationCreateInput": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "string"
+          },
+          "customerIdentifier": {
+            "type": "string"
+          },
+          "deadline": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "courseId",
+          "customerIdentifier"
+        ]
+      },
+      "CustomerGroupPaginated": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerGroup"
+            }
+          },
+          "resultCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "resultCount"
+        ]
+      },
+      "CustomerGroupCreateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "notificationMail": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/customer": {
+      "get": {
+        "operationId": "CustomerController_findCustomer",
+        "summary": "Retrieves a list of customers",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number starting from 1",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The size of the page (max 250)",
+            "schema": {
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "externalId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by externalId",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerPaginated"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Customer"
+        ]
+      },
+      "post": {
+        "operationId": "CustomerController_findOrCreateCustomer",
+        "summary": "Finds or creates a single customer",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Customer"
+        ]
+      }
+    },
+    "/customer/{customerIdentifier}": {
+      "get": {
+        "operationId": "CustomerController_findCustomerById",
+        "summary": "Retrieves a single customer",
+        "parameters": [
+          {
+            "name": "customerIdentifier",
+            "required": true,
+            "in": "path",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Customer"
+        ]
+      },
+      "put": {
+        "operationId": "CustomerController_updateCustomerById",
+        "summary": "Updates a single customer",
+        "parameters": [
+          {
+            "name": "customerIdentifier",
+            "required": true,
+            "in": "path",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Customer"
+        ]
+      },
+      "post": {
+        "operationId": "CustomerController_createOrUpdateCustomer",
+        "summary": "Creates or updates a single customer",
+        "parameters": [
+          {
+            "name": "customerIdentifier",
+            "required": true,
+            "in": "path",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Customer"
+        ]
+      },
+      "delete": {
+        "operationId": "CustomerController_deleteCustomer",
+        "summary": "Removes a single customer",
+        "parameters": [
+          {
+            "name": "customerIdentifier",
+            "required": true,
+            "in": "path",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Customer"
+        ]
+      }
+    },
+    "/customer/{customerIdentifier}/send-invitation": {
+      "post": {
+        "operationId": "CustomerController_sendInvitation",
+        "summary": "Triggers an email invitation for a customer",
+        "parameters": [
+          {
+            "name": "customerIdentifier",
+            "required": true,
+            "in": "path",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Customer"
+        ]
+      }
+    },
+    "/tags": {
+      "get": {
+        "operationId": "TagController_findMany",
+        "summary": "Retrieves a list of tags",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number starting from 1",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The size of the page (max 250)",
+            "schema": {
+              "default": 25,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagPaginated"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tag"
+        ]
+      },
+      "post": {
+        "operationId": "TagController_findOrCreate",
+        "summary": "Finds or creates a single tag",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tag"
+        ]
+      }
+    },
+    "/tags/{tagIdOrName}": {
+      "put": {
+        "operationId": "TagController_updateTagByIdOrName",
+        "summary": "Updates a single tag",
+        "parameters": [
+          {
+            "name": "tagIdOrName",
+            "required": true,
+            "in": "path",
+            "description": "Either the id or the name of the tag",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tag"
+        ]
+      },
+      "delete": {
+        "operationId": "TagController_deleteCustomerTag",
+        "summary": "Deletes a single tag",
+        "parameters": [
+          {
+            "name": "tagIdOrName",
+            "required": true,
+            "in": "path",
+            "description": "Either the id or the name of the tag",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tag"
+        ]
+      }
+    },
+    "/v1/order": {
+      "get": {
+        "operationId": "ProductVariantOrderController_findManyAndCount",
+        "summary": "Retrieves a list of e-commerce orders",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number starting from 1",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The size of the page (max 250)",
+            "schema": {
+              "default": 25,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductVariantOrderPaginated"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/v1/order/{orderId}": {
+      "get": {
+        "operationId": "ProductVariantOrderController_findById",
+        "summary": "Retrieves a single e-commerce order",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the e-commerce order",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductVariantOrderReadDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/course": {
+      "get": {
+        "operationId": "CourseController_findManyAndCount",
+        "summary": "Retrieves a list of courses",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number starting from 1",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The size of the page (max 250)",
+            "schema": {
+              "default": 25,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoursePaginated"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Course"
+        ]
+      },
+      "post": {
+        "operationId": "CourseController_createCourse",
+        "summary": "Creates a single course",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseReadDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Course"
+        ]
+      }
+    },
+    "/course/{courseId}": {
+      "get": {
+        "operationId": "CourseController_findById",
+        "summary": "Retrieves a single course",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the course",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseReadDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Course"
+        ]
+      }
+    },
+    "/participation": {
+      "get": {
+        "operationId": "CustomerCourseParticipationController_findMany",
+        "summary": "Retrieves a list of participations",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number starting from 1",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The size of the page (max 250)",
+            "schema": {
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "customerIdentifier",
+            "required": false,
+            "in": "query",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "description": "The id of the course",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customerCertificateId",
+            "required": false,
+            "in": "query",
+            "description": "The id of the customer certificate",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerCourseParticipationPaginated"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Participation"
+        ]
+      },
+      "post": {
+        "operationId": "CustomerCourseParticipationDeprecatedController_createParticipation",
+        "summary": "Creates or unarchives a single participation",
+        "deprecated": true,
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerCourseParticipationCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerCourseParticipationReadDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Participation - deprecated"
+        ]
+      }
+    },
+    "/participation/{participationId}": {
+      "get": {
+        "operationId": "CustomerCourseParticipationController_findById",
+        "summary": "Retrieves a single participation",
+        "parameters": [
+          {
+            "name": "participationId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the participation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerCourseParticipationReadDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Participation"
+        ]
+      },
+      "delete": {
+        "operationId": "CustomerCourseParticipationDeprecatedController_archiveById",
+        "summary": "Archives a single participation",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "participationId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the participation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerCourseParticipationReadDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Participation - deprecated"
+        ]
+      }
+    },
+    "/participation/{participationId}/send-invitation": {
+      "post": {
+        "operationId": "CustomerCourseParticipationController_sendInvitation",
+        "summary": "Triggers an email course invitation for a customer",
+        "parameters": [
+          {
+            "name": "participationId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the participation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Participation"
+        ]
+      }
+    },
+    "/course/{courseId}/participation": {
+      "put": {
+        "operationId": "CustomerCourseParticipationDeprecatedController_upsertCourseParticipation",
+        "summary": "Enrolls a single customer to a course. If the customer not exists it will be created.",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the course",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerCourseParticipationEnrollmentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Participation - deprecated"
+        ]
+      }
+    },
+    "/me": {
+      "get": {
+        "operationId": "EditorController_me",
+        "summary": "Retrieves the currently authenticated academy",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Editor"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Academy"
+        ]
+      }
+    },
+    "/customer/{customerIdentifier}/tags": {
+      "put": {
+        "operationId": "CustomerToTagController_assignCustomerToTag",
+        "summary": "Assigns a customer to a tag and creates the tag if it does not exist",
+        "parameters": [
+          {
+            "name": "customerIdentifier",
+            "required": true,
+            "in": "path",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertTagToCustomerInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tag"
+        ]
+      }
+    },
+    "/customer/{customerIdentifier}/multiple-tags": {
+      "put": {
+        "operationId": "CustomerToTagController_assignCustomerToMultipleTags",
+        "summary": "Assigns multiple tags to a customer. Tags will be created if they do not exist.",
+        "parameters": [
+          {
+            "name": "customerIdentifier",
+            "required": true,
+            "in": "path",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignMultipleTagsToCustomerInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tag"
+        ]
+      }
+    },
+    "/customer/{customerIdentifier}/tags/{tagIdOrName}": {
+      "delete": {
+        "operationId": "CustomerToTagController_deleteCustomerTag",
+        "summary": "Removes a tag from a customer by customerIdentifier (id, email, or username) and tag",
+        "parameters": [
+          {
+            "name": "customerIdentifier",
+            "required": true,
+            "in": "path",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tagIdOrName",
+            "required": true,
+            "in": "path",
+            "description": "Either the id or the name of the tag",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tag"
+        ]
+      }
+    },
+    "/customer-import": {
+      "get": {
+        "operationId": "CustomerImportController_findCustomerImports",
+        "summary": "Retrieves a list of customer imports",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number starting from 1",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The size of the page (max 250)",
+            "schema": {
+              "default": 25,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerImportPaginated"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CustomerImport"
+        ]
+      }
+    },
+    "/customer-import/{customerImportId}": {
+      "get": {
+        "operationId": "CustomerImportController_findCustomerImportById",
+        "summary": "Retrieves a single customer import by id",
+        "parameters": [
+          {
+            "name": "customerImportId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the customer import",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerImport"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CustomerImport"
+        ]
+      }
+    },
+    "/customer-export": {
+      "get": {
+        "operationId": "CustomerExportController_findCustomerExports",
+        "summary": "Retrieves a list of customer exports",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number starting from 1",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The size of the page (max 250)",
+            "schema": {
+              "default": 25,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerExportPaginated"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CustomerExport"
+        ]
+      },
+      "post": {
+        "operationId": "CustomerExportController_createCustomerExport",
+        "summary": "Creates a single customer export",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerExportCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerExport"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CustomerExport"
+        ]
+      }
+    },
+    "/customer-export/{customerExportId}": {
+      "get": {
+        "operationId": "CustomerExportController_findCustomerExportById",
+        "summary": "Retrieves a single customer export by id",
+        "parameters": [
+          {
+            "name": "customerExportId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the customer export",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerExport"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CustomerExport"
+        ]
+      }
+    },
+    "/subscription": {
+      "get": {
+        "operationId": "RestHookController_findSubscriptions",
+        "summary": "Retrieves a list of webhooks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestHook"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Webhook"
+        ]
+      },
+      "post": {
+        "operationId": "RestHookController_createSubscription",
+        "summary": "Creates a webhook",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestHookCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestHook"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Webhook"
+        ]
+      }
+    },
+    "/subscription/{subscriptionId}": {
+      "get": {
+        "operationId": "RestHookController_findSubscriptionById",
+        "summary": "Retrieves a single webhook by id",
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the subscription",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestHook"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Webhook"
+        ]
+      },
+      "delete": {
+        "operationId": "RestHookController_deleteSubscriptionById",
+        "summary": "Deletes a single webhook by id",
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the subscription",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestHook"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Webhook"
+        ]
+      }
+    },
+    "/v1/course-invitation": {
+      "get": {
+        "operationId": "CourseInvitationController_findMany",
+        "summary": "Retrieves a list of course invitations",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number starting from 1",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The size of the page (max 250)",
+            "schema": {
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "customerIdentifier",
+            "required": false,
+            "in": "query",
+            "description": "Either the id, the email, the username, or the externalId of the customer",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "description": "The id of the course",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseInvitationPaginated"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CourseInvitation"
+        ]
+      },
+      "post": {
+        "operationId": "CourseInvitationController_createCourseInvitation",
+        "summary": "Creates a single course invitation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseInvitationCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseInvitationReadDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CourseInvitation"
+        ]
+      }
+    },
+    "/v1/course-invitation/{courseInvitationId}": {
+      "get": {
+        "operationId": "CourseInvitationController_findById",
+        "summary": "Retrieves a single course invitation",
+        "parameters": [
+          {
+            "name": "courseInvitationId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the course invitation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseInvitationReadDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CourseInvitation"
+        ]
+      },
+      "delete": {
+        "operationId": "CourseInvitationController_deleteById",
+        "summary": "Deletes a single course invitation",
+        "parameters": [
+          {
+            "name": "courseInvitationId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the course invitation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseInvitationReadDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CourseInvitation"
+        ]
+      }
+    },
+    "/v1/course-invitation/{courseInvitationId}/send-invitation": {
+      "post": {
+        "operationId": "CourseInvitationController_sendInvitation",
+        "summary": "Triggers an email course invitation for an invitation",
+        "parameters": [
+          {
+            "name": "courseInvitationId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the course invitation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CourseInvitation"
+        ]
+      }
+    },
+    "/v1/customer-group": {
+      "get": {
+        "operationId": "CustomerGroupController_findMany",
+        "summary": "Retrieves a list of customer groups",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number starting from 1",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The size of the page (max 250)",
+            "schema": {
+              "default": 25,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerGroupPaginated"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CustomerGroup"
+        ]
+      },
+      "post": {
+        "operationId": "CustomerGroupController_createOne",
+        "summary": "Creates a single customer group",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerGroupCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerGroup"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CustomerGroup"
+        ]
+      }
+    },
+    "/v1/customer-group/{customerGroupId}": {
+      "get": {
+        "operationId": "CustomerGroupController_findById",
+        "summary": "Retrieves a single customer group",
+        "parameters": [
+          {
+            "name": "customerGroupId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the customer group",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerGroup"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CustomerGroup"
+        ]
+      },
+      "delete": {
+        "operationId": "CustomerGroupController_deleteById",
+        "summary": "Deletes a single customer group",
+        "parameters": [
+          {
+            "name": "customerGroupId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the customer group",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerGroup"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "CustomerGroup"
+        ]
+      }
+    }
+  }
+}
